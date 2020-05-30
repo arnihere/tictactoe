@@ -51,11 +51,15 @@ class Board extends React.Component {
           }],
           stepNumber: 0,
           xIsNext: true,
+          lastMove: [{
+              colrow: null,
+          }]
         };
       }
     handleClick(i) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
+        const lastMove = this.state.lastMove.slice(0, this.state.stepNumber + 1);
         const squares = current.squares.slice();
         if (calculateWinner(squares) || squares[i]) {
           return;
@@ -67,6 +71,9 @@ class Board extends React.Component {
           }]),
           stepNumber: history.length,
           xIsNext: !this.state.xIsNext,
+          lastMove: lastMove.concat([{
+              colrow: i
+          }])
         });
     }
     jumpTo(step) {
@@ -78,14 +85,20 @@ class Board extends React.Component {
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
+        const colrow = this.state.lastMove
+        
+        
         const winner = calculateWinner(current.squares);
         const moves = history.map((step, move) => {
             const desc = move ?
               'Go to move #' + move :
               'Go to game start';
+            
+            var cr = colrow[move]["colrow"];
+            const currentColRow = move ? [cr%3, Math.floor(cr/3)] : "  "
             return (
                 <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                    <button onClick={() => this.jumpTo(move)}>{desc} col : {currentColRow[0]}, row : {currentColRow[1]}</button>
                  </li>
             );
           });
